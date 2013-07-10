@@ -39,12 +39,54 @@
     };
 
     /* **************************************************
+    Private - create a modal prompt on caller dom, with defaults
+      title:  - prompt title
+      message: - prompt text
+      css:    - default is 'info', add custom classes: 'alert', 'warn', etc
+      height: - default height is 240px
+      width:  - default width is 500px
+      show:   - default show effect is shake,
+        see http://api.jqueryui.com/category/effects/
+      closebtn_text: - default button text is 'Close'
+    ***************************************************** */
+    $.prompt = function(opts) {
+      var params = $.extend({
+        css: "info",
+        message: "",
+        show: "shake"
+      }, opts);
+
+      $.popup(params);
+      slef.dialog({
+        open: function(event, ui) {
+          // set the prompt message on open
+          $(this).text(params.message);
+        },
+        close: function(event, ui) {
+          // clear the prompt message on close
+          $(this).text("");
+        }
+      })
+      .addClass(params.css);
+    };
+
+    /* **************************************************
 
     API: .apptk("popup", {});
 
     ***************************************************** */
     if (action === "popup") {
       $.popup(options);
+      return this;
+    };
+
+    /* **************************************************
+
+    API: .apptk("prompt", {});
+
+    ***************************************************** */
+    if (action === "prompt") {
+      $.prompt(options);
       return this;
     };
 
