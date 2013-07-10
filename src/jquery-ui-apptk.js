@@ -1,5 +1,6 @@
 /*!
   jQuery UI Application Toolkit JavaScript Library
+  https://github.com/fun-ruby/jquery-ui-apptk
 
   Copyright 2013 Long On
   Released under the MIT license
@@ -33,7 +34,7 @@
         title: params.title,
         show: params.show,
         height: params.height,
-        width:params.width,
+        width: params.width,
         autoOpen: false,
         modal: true,
         buttons: [{
@@ -88,7 +89,7 @@
       var params = $.extend({
         text:  "Ok",
         click: function() {
-          throw "Button clicked. Must provide a handler function";
+          $.error("Button clicked. Must provide a handler function");
         }
       }, opts);
 
