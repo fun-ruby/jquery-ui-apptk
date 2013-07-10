@@ -90,6 +90,31 @@
       return this;
     };
 
+    /* **************************************************
+
+    API: .apptk("add_button", {});
+    Add a button to (this), a popup, with defaults
+      text:  - default button text is 'Ok'
+      click: - a handler function
+
+    ***************************************************** */
+    if (action === "add_button") {
+      var params = $.extend({
+        text:  "Ok",
+        click: function() {
+          throw "Button clicked. Must provide a handler function";
+        }
+      }, options);
+
+      var buttons = slef.dialog("option", "buttons");
+      buttons.push({
+        text: params.text,
+        click: params.click
+      });
+      slef.dialog("option", "buttons", buttons);
+      return this;
+    };
+
 
   }
 }
