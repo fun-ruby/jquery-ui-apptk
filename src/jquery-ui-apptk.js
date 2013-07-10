@@ -1,4 +1,11 @@
+/*!
+  jQuery UI Application Toolkit JavaScript Library
 
+  Copyright 2013 Long On
+  Released under the MIT license
+
+  Date: 2013-07-10
+*/
 (function($) {
   $.fn.apptk = function(action, options) {
 
@@ -65,6 +72,7 @@
         close: function(event, ui) {
           // clear the prompt message on close
           $( this ).text("");
+          $( this ).removeClass(params.css);
         }
       })
       .addClass(params.css);
