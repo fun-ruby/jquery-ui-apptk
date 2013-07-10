@@ -60,15 +60,38 @@
       slef.dialog({
         open: function(event, ui) {
           // set the prompt message on open
-          $(this).text(params.message);
+          $( this ).text(params.message);
         },
         close: function(event, ui) {
           // clear the prompt message on close
-          $(this).text("");
+          $( this ).text("");
         }
       })
       .addClass(params.css);
     };
+
+
+    /* **************************************************
+    Private - add a button to (this), a popup, with defaults
+      text:  - default button text is 'Ok'
+      click: - a handler function
+    ***************************************************** */
+    $.add_button = function(opts) {
+      var params = $.extend({
+        text:  "Ok",
+        click: function() {
+          throw "Button clicked. Must provide a handler function";
+        }
+      }, opts);
+
+      var buttons = slef.dialog("option", "buttons");
+      buttons.push({
+        text: params.text,
+        click: params.click
+      });
+      slef.dialog("option", "buttons", buttons);
+    };
+
 
     /* **************************************************
 
@@ -99,19 +122,39 @@
 
     ***************************************************** */
     if (action === "add_button") {
+      $.add_button(options);
+      return this;
+    };
+
+    /* **************************************************
+
+    API: .apptk("confirm", {});
+    Create a modal confirm popup, with defaults
+      title: 'Please Confirm',
+      message: 'Are you sure?',
+      show: 'drop',
+      css: 'info',
+      closebtn_text: 'No',
+      yesbtn_text: 'Yes'
+      yesbtn_click: a handler function
+
+    ***************************************************** */
+    if (action === "confirm") {
       var params = $.extend({
-        text:  "Ok",
-        click: function() {
-          throw "Button clicked. Must provide a handler function";
-        }
+        title: 'Please Confirm',
+        message: 'Are you sure?',
+        show: 'drop',
+        css: 'info',
+        closebtn_text: 'No'
       }, options);
 
-      var buttons = slef.dialog("option", "buttons");
-      buttons.push({
-        text: params.text,
-        click: params.click
+      $.prompt(params);
+
+      $.add_button({
+        text: options.yesbtn_text || 'Yes',
+        click: options.yesbtn_click
       });
-      slef.dialog("option", "buttons", buttons);
+
       return this;
     };
 
