@@ -72,8 +72,9 @@
         },
         close: function(event, ui) {
           // clear the prompt message on close
-          $( this ).text("");
-          $( this ).removeClass(params.css);
+          $( this )
+            .text("")
+            .removeClass(params.css);
         }
       })
       .addClass(params.css);
@@ -167,7 +168,31 @@
       return this;
     };
 
+    /* **************************************************
 
+    API: .apptk("notify", {});
+    Fade-out target then fade-in message, with defaults
+      message: '',
+      fade_out_ms: 1000,
+      fade_in_ms:  1500
+
+    ***************************************************** */
+    if (action === "notify") {
+      var params = $.extend({
+        fade_out_ms: 1000,
+        fade_in_ms: 1500,
+      }, options);
+
+      slef.fadeOut(params.fade_out_ms, function() {
+        $( this )
+          .text(params.message)
+          .fadeIn(params.fade_in_ms);
+      });
+
+      return this;
+    };
+
+    $.error("Undefined action: " + action);
   }
 }
 )(jQuery);
