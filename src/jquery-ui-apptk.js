@@ -10,8 +10,6 @@
 (function($) {
   $.fn.apptk = function(action, options) {
 
-    var slef = $( this );
-
     /* **************************************************
     Private - create a modal popup on caller dom, with defaults
       title:  - popup title
@@ -21,7 +19,7 @@
         see http://api.jqueryui.com/category/effects/
       closebtn_text: - default button text is 'Close'
     ***************************************************** */
-    $.popup = function(opts) {
+    $.popup = function(slef, opts) {
       var params = $.extend({
         title:  "Title",
         height: 240,
@@ -40,7 +38,7 @@
         buttons: [{
           text: params.closebtn_text,
           click: function() {
-            $( this ).dialog("close");
+            slef.dialog("close");
           }
         }]
       });
@@ -57,22 +55,22 @@
         see http://api.jqueryui.com/category/effects/
       closebtn_text: - default button text is 'Close'
     ***************************************************** */
-    $.prompt = function(opts) {
+    $.prompt = function(slef, opts) {
       var params = $.extend({
         css: "info",
         message: "",
         show: "shake"
       }, opts);
 
-      $.popup(params);
+      $.popup(slef, params);
       slef.dialog({
         open: function(event, ui) {
           // set the prompt message on open
-          $( this ).text(params.message);
+          slef.text(params.message);
         },
         close: function(event, ui) {
           // clear the prompt message on close
-          $( this )
+          slef
             .text("")
             .removeClass(params.css);
         }
@@ -86,7 +84,7 @@
       text:  - default button text is 'Ok'
       click: - a handler function
     ***************************************************** */
-    $.add_button = function(opts) {
+    $.add_button = function(slef, opts) {
       var params = $.extend({
         text:  "Ok",
         click: function() {
@@ -109,7 +107,7 @@
 
     ***************************************************** */
     if (action === "popup") {
-      $.popup(options);
+      $.popup(this, options);
       return this;
     };
 
@@ -119,7 +117,7 @@
 
     ***************************************************** */
     if (action === "prompt") {
-      $.prompt(options);
+      $.prompt(this, options);
       return this;
     };
 
@@ -132,7 +130,7 @@
 
     ***************************************************** */
     if (action === "add_button") {
-      $.add_button(options);
+      $.add_button(this, options);
       return this;
     };
 
@@ -158,9 +156,9 @@
         closebtn_text: 'No'
       }, options);
 
-      $.prompt(params);
+      $.prompt(this, params);
 
-      $.add_button({
+      $.add_button(this, {
         text: options.yesbtn_text || 'Yes',
         click: options.yesbtn_click
       });
@@ -183,7 +181,8 @@
         fade_in_ms: 1500,
       }, options);
 
-      slef.fadeOut(params.fade_out_ms, function() {
+      this.fadeOut(params.fade_out_ms, function() {
+        // this == the Dom
         $( this )
           .text(params.message)
           .fadeIn(params.fade_in_ms);
@@ -192,7 +191,7 @@
       return this;
     };
 
-    $.error("Undefined action: " + action);
+    $.error("Undefined .apptk() action: " + action);
   }
 }
 )(jQuery);
