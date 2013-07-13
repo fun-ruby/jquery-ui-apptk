@@ -5,7 +5,7 @@
   Copyright 2013 Long On
   Released under the MIT license
 
-  Date: 2013-07-10
+  Date: 2013-07-13
 */
 (function($) {
   $.fn.apptk = function(action, options) {
@@ -190,6 +190,50 @@
 
       return this;
     };
+
+    /* **************************************************
+
+    API: .apptk("form_data", {});
+
+    Serialize form entries into an http payload, in
+    x-www-form-urlencoded (default) or JSON format.
+    Returns Object or aJSON.Nnot jQuery chainable.
+
+    Inspired by:
+    http://onwebdev.blogspot.com/2012/02/jquery-serialize-form-as-json-object.html
+
+    Options:
+      as_json: false (default)
+
+    ***************************************************** */
+    if (action === "form_data") {
+      var params = $.extend({
+        as_json: false
+      }, options);
+
+      var data = {};
+      var entries = this.serializeArray();
+
+      $.each(entries, function() {
+        var name = this.name;
+        var value = this.value || '';
+
+        if (data[name]) {
+          // collect all values of fields with same 'name' in a collection
+          // e.g. name => [ val1, ..., valN ]
+          if (data[name].push === undefined) {
+            data[name] = [ data[name] ];
+          }
+          data[name].push(value);
+        } else {
+          data[name] = value;
+        }
+      });
+      if (params.as_json) {
+        return JSON.stringify(data);
+      }
+      return data;
+    }
 
     $.error("Undefined .apptk() action: " + action);
   }
