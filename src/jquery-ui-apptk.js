@@ -11,15 +11,20 @@
   $.fn.apptk = function(action, options) {
 
     /* **************************************************
-    Private - create a modal popup on caller dom, with defaults
-      title:  - popup title
-      height: - default height is 240px
-      width:  - default width is 500px
-      show:   - default show effect is puff,
-        see http://api.jqueryui.com/category/effects/
-      closebtn_text: - default button text is 'Close'
+
+    Private - create a modal popup (dialog()) on caller, myself.
+    Returns myself (this)
+
+    Default Options:
+      title:  "Title"
+      height: 240
+      width:  500
+      show:   "puff"
+        see http://api.jqueryui.com/category/effects/ for possible effects
+      closebtn_text: "Close"
+
     ***************************************************** */
-    $.popup = function(slef, opts) {
+    $.popup = function(myself, opts) {
       var params = $.extend({
         title:  "Title",
         height: 240,
@@ -28,7 +33,7 @@
         closebtn_text: "Close"
       }, opts);
 
-      slef.dialog({
+      return myself.dialog({
         title: params.title,
         show: params.show,
         height: params.height,
@@ -38,53 +43,63 @@
         buttons: [{
           text: params.closebtn_text,
           click: function() {
-            slef.dialog("close");
+            myself.dialog("close");
           }
         }]
       });
     };
 
     /* **************************************************
-    Private - create a modal prompt on caller dom, with defaults
-      title:  - prompt title
-      message: - prompt text
-      css:    - default is 'info', add custom classes: 'alert', 'warn', etc
-      height: - default height is 240px
-      width:  - default width is 500px
-      show:   - default show effect is shake,
-        see http://api.jqueryui.com/category/effects/
-      closebtn_text: - default button text is 'Close'
+
+    Private - create a modal prompt (dialog()) on caller, myself
+    Returns myself (this)
+
+    Default options:
+      title: "Title"
+      message: ""
+      css:    "info" - add custom classes: 'alert', 'warn', etc
+      height: 240
+      width:  500
+      show:   "shake"
+        see http://api.jqueryui.com/category/effects/ for possible effects
+      closebtn_text: "Close"
+
     ***************************************************** */
-    $.prompt = function(slef, opts) {
+    $.prompt = function(myself, opts) {
       var params = $.extend({
         css: "info",
         message: "",
         show: "shake"
       }, opts);
 
-      $.popup(slef, params);
-      slef.dialog({
-        open: function(event, ui) {
-          // set the prompt message on open
-          slef.text(params.message);
-        },
-        close: function(event, ui) {
-          // clear the prompt message on close
-          slef
-            .text("")
-            .removeClass(params.css);
-        }
-      })
-      .addClass(params.css);
+      return $.popup(myself, params)
+        .dialog({
+          open: function(event, ui) {
+            // set the prompt message on open
+            myself.text(params.message);
+          },
+          close: function(event, ui) {
+            // clear the prompt message on close
+            myself
+              .text("")
+              .removeClass(params.css);
+          }
+        })
+        .addClass(params.css);
     };
 
 
     /* **************************************************
-    Private - add a button to (this), a popup, with defaults
-      text:  - default button text is 'Ok'
-      click: - a handler function
+
+    Private - add a button to caller, myself (a popup)
+    Returns myself (this)
+
+    Default options:
+      text:  "Ok"
+      click: a button click handler function
+
     ***************************************************** */
-    $.add_button = function(slef, opts) {
+    $.add_button = function(myself, opts) {
       var params = $.extend({
         text:  "Ok",
         click: function() {
@@ -92,86 +107,96 @@
         }
       }, opts);
 
-      var buttons = slef.dialog("option", "buttons");
+      var buttons = myself.dialog("option", "buttons");
       buttons.push({
         text: params.text,
         click: params.click
       });
-      slef.dialog("option", "buttons", buttons);
+      return myself.dialog("option", "buttons", buttons);
     };
 
 
     /* **************************************************
 
     API: .apptk("popup", {});
+      See $.popup for description
+
+    Returns this
 
     ***************************************************** */
     if (action === "popup") {
-      $.popup(this, options);
-      return this;
+      return $.popup(this, options);
     };
 
     /* **************************************************
 
     API: .apptk("prompt", {});
+      See $.prompt for description
+
+    Returns this
 
     ***************************************************** */
     if (action === "prompt") {
-      $.prompt(this, options);
-      return this;
+      return $.prompt(this, options);
     };
 
     /* **************************************************
 
     API: .apptk("add_button", {});
-    Add a button to (this), a popup, with defaults
-      text:  - default button text is 'Ok'
-      click: - a handler function
+      See $.add_button for description
+
+    Returns this
 
     ***************************************************** */
     if (action === "add_button") {
-      $.add_button(this, options);
-      return this;
+      return $.add_button(this, options);
     };
 
     /* **************************************************
 
     API: .apptk("confirm", {});
-    Create a modal confirm popup, with defaults
-      title: 'Please Confirm',
-      message: 'Are you sure?',
-      show: 'drop',
-      css: 'info',
-      closebtn_text: 'No',
+      Create a modal confirm popup (dialog)
+
+    Returns this
+
+    Default options:
+      title: 'Please Confirm'
+      message: 'Are you sure?'
+      show: 'blind'
+      css: 'info'
+      closebtn_text: 'No'
       yesbtn_text: 'Yes'
-      yesbtn_click: a handler function
+      yesbtn_click: a button click handler function
 
     ***************************************************** */
     if (action === "confirm") {
       var params = $.extend({
         title: 'Please Confirm',
         message: 'Are you sure?',
-        show: 'drop',
+        show: 'blind',
         css: 'info',
         closebtn_text: 'No'
       }, options);
 
       $.prompt(this, params);
 
-      $.add_button(this, {
+      return $.add_button(this, {
         text: options.yesbtn_text || 'Yes',
         click: options.yesbtn_click
       });
 
-      return this;
     };
 
     /* **************************************************
 
     API: .apptk("notify", {});
-    Fade-out target then fade-in message, with defaults
-      message: '',
-      fade_out_ms: 1000,
+      Fade-out caller then fade-in with message
+
+    Returns this
+
+    Default options:
+      message: "" (no default)
+      fade_out_ms: 1000
       fade_in_ms:  1500
 
     ***************************************************** */
@@ -181,12 +206,14 @@
         fade_in_ms: 1500,
       }, options);
 
-      this.fadeOut(params.fade_out_ms, function() {
-        // this == the Dom
-        $( this )
-          .text(params.message)
-          .fadeIn(params.fade_in_ms);
-      });
+      this.fadeOut(params.fade_out_ms,
+        function() {
+          // this == the Dom
+          $( this )
+            .text(params.message)
+            .fadeIn(params.fade_in_ms);
+        }
+      );
 
       return this;
     };
@@ -194,16 +221,16 @@
     /* **************************************************
 
     API: .apptk("form_data", {});
+      Serialize form entries into an http payload, in
+      x-www-form-urlencoded (default) or JSON format.
 
-    Serialize form entries into an http payload, in
-    x-www-form-urlencoded (default) or JSON format.
-    Returns Object or aJSON.Nnot jQuery chainable.
+    Returns Object or aJSON. Not jQuery chainable.
 
     Inspired by:
     http://onwebdev.blogspot.com/2012/02/jquery-serialize-form-as-json-object.html
 
-    Options:
-      as_json: false (default)
+    Default options:
+      as_json: false
 
     ***************************************************** */
     if (action === "form_data") {
