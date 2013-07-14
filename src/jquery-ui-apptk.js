@@ -1,36 +1,60 @@
-/*!
-  jQuery UI Application Toolkit JavaScript Library
-  https://github.com/fun-ruby/jquery-ui-apptk
-
-  Copyright 2013 Long On
-  Released under the MIT license
-
-  Date: 2013-07-13
-*/
+/**
+ * jQuery UI Application Toolkit JavaScript Library
+ * https://github.com/fun-ruby/jquery-ui-apptk
+ *
+ * Copyright 2013 Long On
+ * Released under the MIT license
+ *
+ * Date: 2013-07-14
+ */
 (function($) {
   $.fn.apptk = function(action, options) {
 
-    /* **************************************************
+    /**
+     * Private: $.add_button(this, {})
+     *   Add a button to caller, myself (a popup)
+     *
+     *   Default options:
+     *     text:  "Close"
+     *     click: handler function closes caller
+     *
+     *   Return myself (this)
+     */
+    $.add_button = function(myself, opts) {
+      var params = $.extend({
+        text:  "Close",
+        click: function() {
+          myself.dialog("close");
+        }
+      }, opts);
 
-    Private - create a modal popup (dialog()) on caller, myself.
-    Returns myself (this)
+      var buttons = myself.dialog("option", "buttons");
+      buttons.push({
+        text: params.text,
+        click: params.click
+      });
+      return myself.dialog("option", "buttons", buttons);
+    };
 
-    Default Options:
-      title:  "Title"
-      height: 240
-      width:  500
-      show:   "puff"
-        see http://api.jqueryui.com/category/effects/ for possible effects
-      closebtn_text: "Close"
-
-    ***************************************************** */
+    /**
+     * Private: $.popup(this, {})
+     *   Create a modal popup (dialog()) on caller, myself
+     *
+     *   Default Options:
+     *     title:  "Title"
+     *     height: 220
+     *     width:  500
+     *     show:   "puff"
+     *       see http://api.jqueryui.com/category/effects/ for possible effects
+     *
+     *   Return myself (this)
+     */
     $.popup = function(myself, opts) {
       var params = $.extend({
         title:  "Title",
-        height: 240,
+        height: 220,
         width:  500,
-        show:   "puff",
-        closebtn_text: "Close"
+        show:   "puff"
       }, opts);
 
       return myself.dialog({
@@ -40,31 +64,25 @@
         width: params.width,
         autoOpen: false,
         modal: true,
-        buttons: [{
-          text: params.closebtn_text,
-          click: function() {
-            myself.dialog("close");
-          }
-        }]
+        buttons: []
       });
     };
 
-    /* **************************************************
-
-    Private - create a modal prompt (dialog()) on caller, myself
-    Returns myself (this)
-
-    Default options:
-      title: "Title"
-      message: ""
-      css:    "info" - add custom classes: 'alert', 'warn', etc
-      height: 240
-      width:  500
-      show:   "shake"
-        see http://api.jqueryui.com/category/effects/ for possible effects
-      closebtn_text: "Close"
-
-    ***************************************************** */
+    /**
+     * Private: $.prompt(this, {})
+     *   Create a modal prompt (dialog()) on caller, myself
+     *
+     *   Default options:
+     *     title: "Title"
+     *     message: ""
+     *     css:    "info" - add custom classes: 'alert', 'warn', etc
+     *     height: 220
+     *     width:  500
+     *     show:   "shake"
+     *       see http://api.jqueryui.com/category/effects/ for possible effects
+     *
+     *   Returns myself (this)
+     */
     $.prompt = function(myself, opts) {
       var params = $.extend({
         css: "info",
@@ -89,117 +107,105 @@
     };
 
 
-    /* **************************************************
-
-    Private - add a button to caller, myself (a popup)
-    Returns myself (this)
-
-    Default options:
-      text:  "Ok"
-      click: a button click handler function
-
-    ***************************************************** */
-    $.add_button = function(myself, opts) {
-      var params = $.extend({
-        text:  "Ok",
-        click: function() {
-          $.error("Button clicked. Must provide a handler function");
-        }
-      }, opts);
-
-      var buttons = myself.dialog("option", "buttons");
-      buttons.push({
-        text: params.text,
-        click: params.click
-      });
-      return myself.dialog("option", "buttons", buttons);
-    };
-
-
-    /* **************************************************
-
-    API: .apptk("popup", {});
-      See $.popup for description
-
-    Returns this
-
-    ***************************************************** */
-    if (action === "popup") {
-      return $.popup(this, options);
-    };
-
-    /* **************************************************
-
-    API: .apptk("prompt", {});
-      See $.prompt for description
-
-    Returns this
-
-    ***************************************************** */
-    if (action === "prompt") {
-      return $.prompt(this, options);
-    };
-
-    /* **************************************************
-
-    API: .apptk("add_button", {});
-      See $.add_button for description
-
-    Returns this
-
-    ***************************************************** */
+    /**
+     * API: .apptk("add_button", {})
+     *   Add a button to caller, this (a popup)
+     *
+     *   Default options:
+     *     text:  "Close"
+     *     click: handler function closes caller
+     *
+     *   Return this
+     */
     if (action === "add_button") {
       return $.add_button(this, options);
     };
 
-    /* **************************************************
+    /**
+     * API: .apptk("popup", {})
+     *   Create a modal popup (dialog()) on caller, this
+     *
+     *   Default Options:
+     *     title:  "Title"
+     *     height: 220
+     *     width:  500
+     *     show:   "puff"
+     *       see http://api.jqueryui.com/category/effects/ for possible effects
+     *
+     *   Return this
+     */
+    if (action === "popup") {
+      return $.popup(this, options);
+    };
 
-    API: .apptk("confirm", {});
-      Create a modal confirm popup (dialog)
+    /**
+     * API: .apptk("prompt", {})
+     *   Create a modal prompt (dialog()) on caller, this
+     *
+     *   Default options:
+     *     title: "Title"
+     *     message: ""
+     *     css:    "info" - add custom classes: 'alert', 'warn', etc
+     *     height: 220
+     *     width:  500
+     *     show:   "shake"
+     *       see http://api.jqueryui.com/category/effects/ for possible effects
+     *
+     *   Returns this
+     */
+    if (action === "prompt") {
+      return $.prompt(this, options);
+    };
 
-    Returns this
-
-    Default options:
-      title: 'Please Confirm'
-      message: 'Are you sure?'
-      show: 'blind'
-      css: 'info'
-      closebtn_text: 'No'
-      yesbtn_text: 'Yes'
-      yesbtn_click: a button click handler function
-
-    ***************************************************** */
+    /**
+     * API: .apptk("confirm", {})
+     *   Create a modal confirm popup (dialog) on caller, this
+     *
+     *   Default options:
+     *     title: 'Please Confirm'
+     *     message: 'Are you sure?'
+     *     show: 'blind'
+     *     css: 'info'
+     *     closebtn_text: 'No'
+     *     closebtn_click: a button click handler function
+     *     okbtn_text: 'Yes'
+     *     okbtn_click: a button click handler function
+     *
+     *   Return this
+     */
     if (action === "confirm") {
       var params = $.extend({
         title: 'Please Confirm',
         message: 'Are you sure?',
         show: 'blind',
         css: 'info',
-        closebtn_text: 'No'
       }, options);
 
       $.prompt(this, params);
 
+      $.add_button(this, {
+        text: options.closebtn_text || 'No',
+        click: options.closebtn_click
+      });
+
       return $.add_button(this, {
-        text: options.yesbtn_text || 'Yes',
-        click: options.yesbtn_click
+        text: options.okbtn_text || 'Yes',
+        click: options.okbtn_click
       });
 
     };
 
-    /* **************************************************
-
-    API: .apptk("notify", {});
-      Fade-out caller then fade-in with message
-
-    Returns this
-
-    Default options:
-      message: "" (no default)
-      fade_out_ms: 1000
-      fade_in_ms:  1500
-
-    ***************************************************** */
+    /**
+     * API: .apptk("notify", {})
+     *   Fade-out caller then fade-in with message
+     *
+     *   Default options:
+     *     message: "" (no default)
+     *     fade_out_ms: 1000
+     *     fade_in_ms:  1500
+     *
+     *   Return this
+     */
     if (action === "notify") {
       var params = $.extend({
         fade_out_ms: 1000,
@@ -218,21 +224,19 @@
       return this;
     };
 
-    /* **************************************************
-
-    API: .apptk("form_data", {});
-      Serialize form entries into an http payload, in
-      x-www-form-urlencoded (default) or JSON format.
-
-    Returns Object or aJSON. Not jQuery chainable.
-
-    Inspired by:
-    http://onwebdev.blogspot.com/2012/02/jquery-serialize-form-as-json-object.html
-
-    Default options:
-      as_json: false
-
-    ***************************************************** */
+    /**
+     *  API: .apptk("form_data", {})
+     *    Serialize form entries into an http payload, either
+     *    x-www-form-urlencoded (default) or JSON format.
+     *
+     *    Inspired by:
+     *      http://onwebdev.blogspot.com/2012/02/jquery-serialize-form-as-json-object.html
+     *
+     *    Default options:
+     *      as_json: false
+     *
+     *    Return Object or aJSON string. Note, not jQuery chainable.
+     */
     if (action === "form_data") {
       var params = $.extend({
         as_json: false
@@ -262,7 +266,11 @@
       return data;
     }
 
+    /**
+     * Action is unsupported. Throw error.
+     */
     $.error("Undefined .apptk() action: " + action);
+
   }
 }
 )(jQuery);
