@@ -11,7 +11,7 @@
   $.fn.apptk = function(action, options) {
 
     /**
-     * Private: $.add_button(this, {})
+     * Private: tk_add_button(this, {})
      *   Add a button to caller, myself (a popup)
      *
      *   Default options:
@@ -20,7 +20,7 @@
      *
      *   Return myself (this)
      */
-    $.add_button = function(myself, opts) {
+    var tk_add_button = function(myself, opts) {
       var params = $.extend({
         text:  "Close",
         click: function() {
@@ -37,23 +37,25 @@
     };
 
     /**
-     * Private: $.popup(this, {})
+     * Private: tk_popup(this, {})
      *   Create a modal popup (dialog()) on caller, myself
      *
      *   Default Options:
      *     title:  "Title"
      *     height: 220
      *     width:  500
+     *     modal:  true
      *     show:   "puff"
      *       see http://api.jqueryui.com/category/effects/ for possible effects
      *
      *   Return myself (this)
      */
-    $.popup = function(myself, opts) {
+    var tk_popup = function(myself, opts) {
       var params = $.extend({
         title:  "Title",
         height: 220,
         width:  500,
+        modal: true,
         show:   "puff"
       }, opts);
 
@@ -63,13 +65,13 @@
         height: params.height,
         width: params.width,
         autoOpen: false,
-        modal: true,
+        modal: params.modal,
         buttons: []
       });
     };
 
     /**
-     * Private: $.prompt(this, {})
+     * Private: tk_prompt(this, {})
      *   Create a modal prompt (dialog()) on caller, myself
      *
      *   Default options:
@@ -78,19 +80,20 @@
      *     css:    "info" - add custom classes: 'alert', 'warn', etc
      *     height: 220
      *     width:  500
+     *     modal:  true
      *     show:   "shake"
      *       see http://api.jqueryui.com/category/effects/ for possible effects
      *
      *   Returns myself (this)
      */
-    $.prompt = function(myself, opts) {
+    var tk_prompt = function(myself, opts) {
       var params = $.extend({
         css: "info",
         message: "",
         show: "shake"
       }, opts);
 
-      return $.popup(myself, params)
+      return tk_popup(myself, params)
         .dialog({
           open: function(event, ui) {
             // set the prompt message on open
@@ -106,6 +109,27 @@
         .addClass(params.css);
     };
 
+    /**
+     * Private: tk_render_checkbox(this, values-array)
+     *   Determine if this (checkbox) should be checked.
+     *   .apptk() helper function
+     *
+     *   Returns boolean
+     */
+    var tk_render_checkbox = function(checkbox, values) {
+      if (values.push) {
+        var checked = false;
+        $.each(values, function() {
+          if (this == checkbox.value) {
+            checked = true;
+            return false;  // break out of loop
+          }
+        });
+        return checked;
+      }
+      return (values == checkbox.value);
+    };
+
 
     /**
      * API: .apptk("add_button", {})
@@ -118,7 +142,7 @@
      *   Return this
      */
     if (action === "add_button") {
-      return $.add_button(this, options);
+      return tk_add_button(this, options);
     };
 
     /**
@@ -129,13 +153,14 @@
      *     title:  "Title"
      *     height: 220
      *     width:  500
+     *     modal:  true
      *     show:   "puff"
      *       see http://api.jqueryui.com/category/effects/ for possible effects
      *
      *   Return this
      */
     if (action === "popup") {
-      return $.popup(this, options);
+      return tk_popup(this, options);
     };
 
     /**
@@ -148,13 +173,14 @@
      *     css:    "info" - add custom classes: 'alert', 'warn', etc
      *     height: 220
      *     width:  500
+     *     modal:  true
      *     show:   "shake"
      *       see http://api.jqueryui.com/category/effects/ for possible effects
      *
      *   Returns this
      */
     if (action === "prompt") {
-      return $.prompt(this, options);
+      return tk_prompt(this, options);
     };
 
     /**
@@ -181,14 +207,14 @@
         css: 'info',
       }, options);
 
-      $.prompt(this, params);
+      tk_prompt(this, params);
 
-      $.add_button(this, {
+      tk_add_button(this, {
         text: options.closebtn_text || 'No',
         click: options.closebtn_click
       });
 
-      return $.add_button(this, {
+      return tk_add_button(this, {
         text: options.okbtn_text || 'Yes',
         click: options.okbtn_click
       });
@@ -264,6 +290,70 @@
         return JSON.stringify(data);
       }
       return data;
+    }
+
+    /**
+     *  API: .apptk("form_render", {})
+     *    Populate form entries with given data object
+     *
+     *    Default options:
+     *      data: Object
+     *
+     *    Return this
+     */
+    if (action === "form_render") {
+      var params = $.extend({
+        data: {}
+      }, options);
+
+      var entries = this.find("[name]");
+      var idx_of = {};
+
+      $.each(entries, function() {
+        var name = this.name;
+        var value = params.data[name] || '';
+
+        switch(this.tagName)
+        {
+          case "SELECT":
+            // TODO - render_select()
+            break;
+
+          case "TEXTAREA":
+            $( this ).val(value);
+            break;
+
+          default:
+            // do nothing
+        }
+
+        switch(this.type)
+        {
+          case "checkbox":
+            var checked = tk_render_checkbox(this, value);
+            $( this ).prop("checked", checked );
+            break;
+
+          case "radio":
+            $( this ).prop("checked", (value == this.value) );
+            break;
+
+          case "text":
+            if (value.push) {
+              // handle multiple entries of same 'name'
+              // assumes value is an array
+              var i = idx_of[name] || 0;
+              value = value[i] || '';
+              idx_of[name] = i + 1;
+            }
+            $( this ).val(value);
+            break;
+
+          default:
+            // do nothing
+        }
+      });
+      return this;
     }
 
     /**
