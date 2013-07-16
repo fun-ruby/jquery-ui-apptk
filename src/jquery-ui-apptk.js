@@ -299,6 +299,11 @@
      *    Default options:
      *      data: Object
      *
+     *    Form tags supported thus far:
+     *      SELECT, TEXTAREA
+     *      INPUT types:
+     *        checkbox, radio, hidden, text
+     *
      *    Return this
      */
     if (action === "form_render") {
@@ -316,9 +321,6 @@
         switch(this.tagName)
         {
           case "SELECT":
-            // TODO - render_select()
-            break;
-
           case "TEXTAREA":
             $( this ).val(value);
             break;
@@ -338,6 +340,7 @@
             $( this ).prop("checked", (value == this.value) );
             break;
 
+          case "hidden":
           case "text":
             if (value.push) {
               // handle multiple entries of same 'name'
