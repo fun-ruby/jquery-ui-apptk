@@ -242,7 +242,7 @@
      *
      *   Pass in handler functions to manage the full life-cycle of the form.
      *   E.g.
-     *     on_open: function() {
+     *     open: function() {
      *         // when popup open, populate form with data to edit
      *       }
      *
@@ -263,7 +263,7 @@
      *   Return this
      */
     if (action === "popup_form") {
-      var forms = this.find("form");
+      var form = this.find("form").first();
 
       var params = $.extend({
         title: 'New Form',
@@ -272,7 +272,7 @@
       }, options);
 
       // register the form.submit handler
-      forms.first().submit(params.submitbtn_click);
+      form.submit(params.submitbtn_click);
 
       return this
         .apptk("popup", params)
@@ -284,11 +284,8 @@
           text: params.submitbtn_text,
           click: function() {
             // trigger the form.submit event
-            forms.first().submit();
+            form.submit();
           }
-        })
-        .dialog({
-          open: params.on_open
         });
     }
 
