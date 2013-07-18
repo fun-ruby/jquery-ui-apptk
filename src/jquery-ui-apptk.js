@@ -39,11 +39,14 @@
     /**
      * Private: tk_popup(this, {})
      *   Create a modal popup (dialog()) on caller, myself
+     *   All .dialog() options can be used here. Except buttons:, which is
+     *   initialized to []
      *
      *   Default Options:
      *     title:  "Title"
      *     height: 220
      *     width:  500
+     *     autoOpen: false
      *     modal:  true
      *     show:   "puff"
      *       see http://api.jqueryui.com/category/effects/ for possible effects
@@ -55,24 +58,20 @@
         title:  "Title",
         height: 220,
         width:  500,
-        modal: true,
+        autoOpen: false,
+        modal:  true,
         show:   "puff"
       }, opts);
 
-      return myself.dialog({
-        title: params.title,
-        show: params.show,
-        height: params.height,
-        width: params.width,
-        autoOpen: false,
-        modal: params.modal,
-        buttons: []
-      });
+      params.buttons = [];  // empty all buttons
+
+      return myself.dialog(params);
     };
 
     /**
      * Private: tk_prompt(this, {})
      *   Create a modal prompt (dialog()) on caller, myself
+     *   All .apptk("popup") options can be used here.
      *
      *   Default options:
      *     title: "Title"
@@ -80,6 +79,7 @@
      *     css:    "info" - add custom classes: 'alert', 'warn', etc
      *     height: 220
      *     width:  500
+     *     autoOpen: false
      *     modal:  true
      *     show:   "shake"
      *       see http://api.jqueryui.com/category/effects/ for possible effects
@@ -127,11 +127,14 @@
     /**
      * API: .apptk("popup", {})
      *   Create a modal popup (dialog()) on caller, this
+     *   All .dialog() options can be used here. Except buttons:, which is
+     *   initialized to []
      *
      *   Default Options:
      *     title:  "Title"
      *     height: 220
      *     width:  500
+     *     autoOpen: false
      *     modal:  true
      *     show:   "puff"
      *       see http://api.jqueryui.com/category/effects/ for possible effects
@@ -145,6 +148,7 @@
     /**
      * API: .apptk("prompt", {})
      *   Create a modal prompt (dialog()) on caller, this
+     *   All .apptk("popup") options can be used here.
      *
      *   Default options:
      *     title: "Title"
@@ -152,6 +156,7 @@
      *     css:    "info" - add custom classes: 'alert', 'warn', etc
      *     height: 220
      *     width:  500
+     *     autoOpen: false
      *     modal:  true
      *     show:   "shake"
      *       see http://api.jqueryui.com/category/effects/ for possible effects
@@ -165,6 +170,7 @@
     /**
      * API: .apptk("confirm", {})
      *   Create a modal confirm popup (dialog) on caller, this
+     *   All .apptk("prompt") options can be used here.
      *
      *   Default options:
      *     title: 'Please Confirm'
