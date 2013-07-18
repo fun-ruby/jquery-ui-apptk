@@ -99,28 +99,8 @@
         var name = this.name;
         var value = params.data[name] || '';
 
-        switch(this.tagName)
-        {
-          case "SELECT":
-          case "TEXTAREA":
-            $( this ).val(value);
-            break;
-
-          default:
-            // do nothing
-        }
-
         switch(this.type)
         {
-          case "checkbox":
-            var checked = tk_render_checkbox(this, value);
-            $( this ).prop("checked", checked );
-            break;
-
-          case "radio":
-            $( this ).prop("checked", (value == this.value) );
-            break;
-
           case "hidden":
           case "text":
             if (value.push) {
@@ -133,9 +113,30 @@
             $( this ).val(value);
             break;
 
+          case "checkbox":
+            var checked = tk_render_checkbox(this, value);
+            $( this ).prop("checked", checked );
+            break;
+
+          case "radio":
+            $( this ).prop("checked", (value == this.value) );
+            break;
+
           default:
             // do nothing
         }
+
+        switch(this.tagName)
+        {
+          case "SELECT":
+          case "TEXTAREA":
+            $( this ).val(value);
+            break;
+
+          default:
+            // do nothing
+        }
+
       });
       return this;
     }
