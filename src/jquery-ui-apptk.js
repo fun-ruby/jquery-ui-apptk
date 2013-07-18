@@ -229,6 +229,64 @@
       return this;
     };
 
+   /**
+     * API: .apptk("popup_form", {})
+     *   Create a popup containing a (one) form on caller, this.
+     *   All .apptk("popup") options can be used here.
+     *
+     *   Pass in handler functions to manage the full life-cycle of the form.
+     *   E.g.
+     *     on_open: function() {
+     *         // when popup open, populate form with data to edit
+     *       }
+     *
+     *     closebtn_click: function() {
+     *         // optional, do some actions, then close this
+     *       }
+     *
+     *     submitbtn_click: function() {
+     *         // when form.submit, serialize form data, POST to service
+     *       }
+     *
+     *   Default options:
+     *     title: 'New Form'
+     *     closebtn_text: 'Cancel'
+     *     closebtn_click: default is close this
+     *     submitbtn_text: 'Submit'
+     *
+     *   Return this
+     */
+    if (action === "popup_form") {
+      var forms = this.find("form");
+
+      var params = $.extend({
+        title: 'New Form',
+        closebtn_text: 'Cancel',
+        submitbtn_text: 'Submit'
+      }, options);
+
+      // register the form.submit handler
+      forms.first().submit(params.submitbtn_click);
+
+      return this
+        .apptk("popup", params)
+        .apptk("add_button", {
+          text: params.closebtn_text,
+          click: params.closebtn_click
+        })
+        .apptk("add_button", {
+          text: params.submitbtn_text,
+          click: function() {
+            // trigger the form.submit event
+            forms.first().submit();
+          }
+        })
+        .dialog({
+          open: params.on_open
+        });
+    }
+
+
     /**
      * Action is unsupported. Throw error.
      */
